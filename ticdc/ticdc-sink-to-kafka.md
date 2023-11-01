@@ -5,23 +5,23 @@ summary: 了解如何使用 TiCDC 将数据同步到 Kafka。
 
 # 同步数据到 Kafka
 
-本文介绍如何使用 TiCDC 创建一个将增量数据复制到 Kafka 的 Changefeed。
+本文介绍如何创建一个 Changefeed，将增量数据复制到 Kafka。
 
-## 创建同步任务，复制增量数据 Kafka
+## 创建同步任务，复制增量数据到 Kafka
 
 使用以下命令来创建同步任务：
 
 ```shell
 cdc cli changefeed create \
     --server=http://10.0.10.25:8300 \
-    --sink-uri="kafka://127.0.0.1:9092/topic-name?protocol=canal-json&kafka-version=2.4.0&partition-num=6&max-message-bytes=67108864&replication-factor=1" \
+    --sink-uri="kafka://127.0.0.1:9092/topic-name?protocol=canal-json&partition-num=3&replication-factor=1" \
     --changefeed-id="simple-replication-task"
 ```
 
 ```shell
 Create changefeed successfully!
 ID: simple-replication-task
-Info: {"sink-uri":"kafka://127.0.0.1:9092/topic-name?protocol=canal-json&kafka-version=2.4.0&partition-num=6&max-message-bytes=67108864&replication-factor=1","opts":{},"create-time":"2020-03-12T22:04:08.103600025+08:00","start-ts":415241823337054209,"target-ts":0,"admin-job-type":0,"sort-engine":"unified","sort-dir":".","config":{"case-sensitive":true,"filter":{"rules":["*.*"],"ignore-txn-start-ts":null,"ddl-allow-list":null},"mounter":{"worker-num":16},"sink":{"dispatchers":null},"scheduler":{"type":"table-number","polling-time":-1}},"state":"normal","history":null,"error":null}
+Info: {"sink-uri":"kafka://127.0.0.1:9092/topic-name?protocol=canal-json&partition-num=3&replication-factor=1","opts":{},"create-time":"2020-03-12T22:04:08.103600025+08:00","start-ts":415241823337054209,"target-ts":0,"admin-job-type":0,"sort-engine":"unified","sort-dir":".","config":{"case-sensitive":true,"filter":{"rules":["*.*"],"ignore-txn-start-ts":null,"ddl-allow-list":null},"mounter":{"worker-num":16},"sink":{"dispatchers":null},"scheduler":{"type":"table-number","polling-time":-1}},"state":"normal","history":null,"error":null}
 ```
 
 - `--server`：TiCDC 集群中任意一个 TiCDC 服务器的地址。
@@ -42,16 +42,15 @@ Sink URI 用于指定 TiCDC 目标系统的连接信息，遵循以下格式：
 一个通用的配置样例如下所示：
 
 ```shell
---sink-uri="kafka://127.0.0.1:9092/topic-name?protocol=canal-json&kafka-version=2.4.0&partition-num=6&max-message-bytes=67108864&replication-factor=1"
+--sink-uri="kafka://127.0.0.1:9092,127.0.0.2:9092/topic-name?protocol=canal-json&partition-num=3&max-message-bytes=10485760&replication-factor=1"
 ```
 
 URI 中可配置的的参数如下：
 
 | 参数               | 描述                                                         |
 | :------------------ | :------------------------------------------------------------ |
-| `127.0.0.1`          | 下游 Kafka 对外提供服务的 IP。                                 |
-| `9092`               | 下游 Kafka 的连接端口。                                          |
-| `topic-name`           | 变量，使用的 Kafka topic 名字。                                      |
+| `127.0.0.1:9092,127.0.0.2:9092` | 下游 Kafka 对外提供服务的网络地址，建议提供多个 Kafka 节点的地址，以 ',' 分割 |
+| `topic-name`         | 变量，使用的 Kafka topic 名字。                                      |
 | `kafka-version`      | 下游 Kafka 版本号（可选，默认值 `2.4.0`，目前支持的最低版本为 `0.11.0.2`，最高版本为 `3.2.0`。该值需要与下游 Kafka 的实际版本保持一致）。 |
 | `kafka-client-id`    | 指定同步任务的 Kafka 客户端的 ID（可选，默认值为 `TiCDC_sarama_producer_同步任务的 ID`）。 |
 | `partition-num`      | 下游 Kafka partition 数量（可选，不能大于实际 partition 数量，否则创建同步任务会失败，默认值 `3`）。|

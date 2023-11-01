@@ -5,7 +5,7 @@ summary: 了解如何使用 TiCDC 将数据同步到 TiDB 或 MySQL
 
 # 同步数据到 MySQL 兼容数据库
 
-本文介绍如何使用 TiCDC 创建一个将增量数据复制到下游 TiDB 数据库，或其他兼容 MySQL 协议数据库的 Changefeed。同时介绍了如何使用 TiCDC 灾难场景的最终一致性复制功能。
+本文介绍如何创建一个 Changefeed，将增量数据复制到下游 TiDB 数据库，或其他兼容 MySQL 协议数据库。同时介绍了如何使用 TiCDC 灾难场景的最终一致性复制功能。
 
 ## 创建同步任务，复制增量数据到 MySQL 兼容数据库
 
