@@ -53,6 +53,8 @@ cdc cli changefeed create --server=http://127.0.0.1:8300 --changefeed-id="kafka-
 
 ## 数据格式定义
 
+Avro 协议，只发送 DML 事件，不发送 DDL 事件和 Watermark 事件。
+
 TiCDC 会将一个 DML 事件转换为一个 kafka 事件，其中事件的 key 和 value 都按照 Avro 协议进行编码。
 
 ### Key 数据格式
